@@ -23,11 +23,18 @@ String pin = "1111";
 String key = "";
 String newKey = "";
 String newKey2 = "";
-boolean doorState = false;
+boolean doorUnlocked = false;
 boolean clear = true;
 int pos = 0;
 
-void setup() {
+const int trigPin = 13;
+const int echoPin = 12;
+const int buzzerPin = 3;
+
+void setup() {  
+  pinMode(buzzerPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  pinMode(trigPin, OUTPUT);
   myservo.attach(11);
   lcd.begin(16,2);
   Serial.begin(9600); 
@@ -43,8 +50,35 @@ if(clear){
   }
 }
 
+void ultrasonic1(){  
+  double duration, distance;
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  duration = pulseIn(echoPin, HIGH);
+
+  distance = duration / 29.0 / 2.0;
+  
+  Serial.print(distance);
+  Serial.print("cm");
+  Serial.println();
+
+  if(distance > 20){
+    digitalWrite(buzzerPin, HIGH);
+    }
+  else{
+        digitalWrite(buzzerPin, LOW);
+    }
+  }
+
 void loop() {
- 
+
+if(!doorUnlocked)
+{
+  ultrasonic1();
+}
+
 switch(screen){
   case 0: screen0();
           break;
@@ -120,7 +154,7 @@ void screen1(){
         screen = 2;
         key="";
         keyCount=0;
-        doorState = true;
+        doorUnlocked = true;
 
         lcd.setCursor(0,0);
         lcd.print("UNLOCKED");
@@ -140,7 +174,9 @@ void screen2(){
   clear_screen();
    
   lcd.setCursor(0,0);
-  lcd.print("DO SOMETHING");
+  lcd.print("C-Change Pin");
+  lcd.setCursor(0,1);
+  lcd.print("D-Lock");
   
 
   char c=customKeypad.getKey();
@@ -164,6 +200,8 @@ void screen2(){
         myservo.write(pos);              
         delay(15);
       } 
+
+      doorUnlocked = false;
       screen=0;
     }
 
@@ -286,9 +324,9 @@ void screen7(){
   clear_screen();
 
   lcd.setCursor(0,0);
-  lcd.print("ENTER");
+  lcd.print("ENTER NEW PIN");
   lcd.setCursor(0,1);
-  lcd.print("NEW PIN AGAIN");
+  lcd.print("AGAIN");
   
   char c=customKeypad.getKey();
 
