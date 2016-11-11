@@ -26,14 +26,19 @@ boolean doorUnlocked = false;
 
 const int trigPin = 13;
 const int echoPin = 12;
-const int buzzerPin = 3;
+const int buzzerPin = 52;
 
 void setup() {  
   pinMode(buzzerPin, OUTPUT);
   pinMode(echoPin, INPUT);
   pinMode(trigPin, OUTPUT);
-  myservo.attach(11);
+  myservo.attach(2);
   lcd.begin(16,2);
+  myservo.write(180);
+
+  clear_screen();
+  lcd.setCursor(0,0);
+  lcd.print("WELCOME");
   Serial.begin(9600); 
 }
 
@@ -56,7 +61,7 @@ void ultrasonic1(){
   distance = duration / 29.0 / 2.0;
   
 
-  if(distance > 20){
+  if(distance < 20){
     digitalWrite(buzzerPin, HIGH);
     }
   else{
@@ -89,6 +94,10 @@ void loop() {
 
 void unlockDoor(){  
   doorUnlocked = true;
+  clear_screen();
+  lcd.setCursor(0,0);
+  lcd.print("UNLOCKED");
+  
   for (pos = 180; pos >= 0; pos -= 1) {
     myservo.write(pos);              
     delay(15); 
@@ -97,11 +106,14 @@ void unlockDoor(){
 
 
 
-void lockDoor(){    
+void lockDoor(){
   for (pos = 0; pos <= 180; pos += 1) {
     myservo.write(pos);              
     delay(15);
-  } 
+  }
 
+  clear_screen();
+  lcd.setCursor(0,0);
+  lcd.print("WELCOME");
   doorUnlocked = false;
 }

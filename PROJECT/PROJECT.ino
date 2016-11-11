@@ -31,14 +31,15 @@ int pos = 0;
 
 const int trigPin = 13;
 const int echoPin = 12;
-const int buzzerPin = 3;
+const int buzzerPin = 52;
 
 void setup() {  
   pinMode(buzzerPin, OUTPUT);
   pinMode(echoPin, INPUT);
   pinMode(trigPin, OUTPUT);
-  myservo.attach(11);
+  myservo.attach(2);
   lcd.begin(16,2);
+  myservo.write(180);
   Serial.begin(9600); 
 }
 
@@ -48,6 +49,7 @@ if(clear){
     lcd.print("                ");
     lcd.setCursor(0,1);
     lcd.print("                ");
+    lcd.setCursor(0,0);
     clear = false;
   }
 }
@@ -63,7 +65,7 @@ void ultrasonic1(){
   distance = duration / 29.0 / 2.0;
   
 
-  if(distance > 20){
+  if(distance < 20){
     digitalWrite(buzzerPin, HIGH);
     }
   else{
@@ -77,14 +79,7 @@ if(!doorUnlocked)
 {
   ultrasonic1();
 }
-  
-if(Serial.available()){
-  Serial.print("This is a mistake");
-  delay(100);
-  Serial.println();
-Serial.print((char)Serial.read());
-
-}
+ 
 switch(screen){
   case 0: screen0();
           break;
@@ -166,9 +161,9 @@ void screen1(){
         lcd.print("UNLOCKED");
         Serial.print(1);
         delay(1000);
-        for (pos = 0; pos <= 180; pos += 1) {
+        for (pos = 180; pos >= 0; pos -= 1) {
           myservo.write(pos);              
-          delay(15); 
+          delay(15);
          }
         }
       }
@@ -203,7 +198,7 @@ void screen2(){
       lcd.print("LOCKED");
       delay(1000);
 
-      for (pos = 180; pos >= 0; pos -= 1) {
+      for (pos = 0; pos <= 180; pos += 1) {
         myservo.write(pos);              
         delay(15);
       } 
