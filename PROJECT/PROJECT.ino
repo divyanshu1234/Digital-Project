@@ -1,6 +1,7 @@
 #include <Keypad.h>
 #include <LiquidCrystal.h>
 #include <Servo.h>
+#include <SoftwareSerial.h>
 
 Servo myservo;
 LiquidCrystal lcd(10,9,4,5,6,8);
@@ -16,6 +17,7 @@ byte rowPins[4] = {30,32,34,36};
 byte colPins[4] = {38,40,42,44};
 
 Keypad customKeypad = Keypad(makeKeymap(hexakeys),rowPins,colPins,4,4);
+
 
 int screen = 0;
 int keyCount = 0; 
@@ -60,9 +62,6 @@ void ultrasonic1(){
 
   distance = duration / 29.0 / 2.0;
   
-  Serial.print(distance);
-  Serial.print("cm");
-  Serial.println();
 
   if(distance > 20){
     digitalWrite(buzzerPin, HIGH);
@@ -78,7 +77,14 @@ if(!doorUnlocked)
 {
   ultrasonic1();
 }
+  
+if(Serial.available()){
+  Serial.print("This is a mistake");
+  delay(100);
+  Serial.println();
+Serial.print((char)Serial.read());
 
+}
 switch(screen){
   case 0: screen0();
           break;
@@ -158,6 +164,7 @@ void screen1(){
 
         lcd.setCursor(0,0);
         lcd.print("UNLOCKED");
+        Serial.print(1);
         delay(1000);
         for (pos = 0; pos <= 180; pos += 1) {
           myservo.write(pos);              
